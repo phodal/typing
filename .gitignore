@@ -2,3 +2,9 @@
 .idea
 stadal.log
 *.log
+**/cmake-build-debug
+
+# C/C++ target
+*.o
+*.out
+**/*/main
