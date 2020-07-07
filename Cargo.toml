@@ -20,3 +20,7 @@ exclude = [
 ]
 
 [dependencies]
+# objective-c native
+objc = "0.2.7"
+libc = "0.2.71"
+cocoa = "0.22.0"
