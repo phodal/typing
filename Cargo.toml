@@ -22,11 +22,8 @@ build="build.rs"
 
 
 [dependencies]
-# objective-c native
-objc = "0.2.7"
-libc = "0.2.71"
-cocoa = "0.22.0"
-
+dirs = "2.0.2"
+log = "0.4.8"
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2.62"

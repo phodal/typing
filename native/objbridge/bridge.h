@@ -16,6 +16,13 @@ typedef void (*KeypressCallback)(void * self, const char *buffer, int32_t len, i
 
 extern KeypressCallback keypress_callback;
 void register_keypress_callback(KeypressCallback callback);
+
+int32_t eventloop();
+
+int32_t check_accessibility();
+int32_t prompt_accessibility();
+
+int32_t get_secure_input_process(int64_t *pid);
 };
 
 #endif //TYPING_BRIDGE_H
