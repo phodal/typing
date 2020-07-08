@@ -18,9 +18,19 @@ exclude = [
     ".github",
     ".travis.yml",
 ]
+build="build.rs"
+
 
 [dependencies]
 # objective-c native
 objc = "0.2.7"
 libc = "0.2.71"
 cocoa = "0.22.0"
+
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.62"
+
+[build-dependencies]
+cmake = "0.1.31"
+

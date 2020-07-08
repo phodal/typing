@@ -1,3 +1,7 @@
+extern {
+    fn doubler(x: u32) -> u32;
+}
+
 fn main() {
-    println!("hello, world!");
+    unsafe { println!("{}", doubler(1)); }
 }
