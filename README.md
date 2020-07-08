@@ -1,3 +1,14 @@
+
+## Tech Stack
+
+### Databse
+
+[Rust-Postgres](https://github.com/sfackler/rust-postgres)
+
+[Rusqlite](https://github.com/rusqlite/rusqlite)
+
+### IME
+
 [MagicKeys](https://github.com/zsszatmari/MagicKeys)
 
 [Pinyin IME - 拼音输入法](https://github.com/xalanq/pinyin-ime)
