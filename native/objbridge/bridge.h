@@ -5,8 +5,17 @@
 #ifndef TYPING_BRIDGE_H
 #define TYPING_BRIDGE_H
 
+#include <stdint.h>
+
 extern "C" {
-void open_settings_panel();
+extern void * context_instance;
+
+int32_t initialize(void * context);
+
+typedef void (*KeypressCallback)(void * self, const char *buffer, int32_t len, int32_t event_type, int32_t key_code);
+
+extern KeypressCallback keypress_callback;
+void register_keypress_callback(KeypressCallback callback);
 };
 
 #endif //TYPING_BRIDGE_H
