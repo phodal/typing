@@ -1,10 +1,10 @@
-#[link(name="doubler", kind="static")]
+#[link(name="objbridge", kind="static")]
 extern {
-    fn doubler(x: u32) -> u32;
+    fn open_settings_panel();
 }
 
 fn main() {
     unsafe {
-        println!("{}", doubler(1));
+        open_settings_panel();
     }
 }
