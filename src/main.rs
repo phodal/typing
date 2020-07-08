@@ -8,6 +8,7 @@ use std::sync::mpsc::Sender;
 
 use log::{debug, error};
 use crate::ime::{Event, KeyEvent, KeyModifier};
+use std::thread;
 
 mod ime;
 
@@ -30,10 +31,8 @@ pub struct TypingContext {
 }
 
 impl TypingContext {
-    pub fn new() -> Box<TypingContext> {
-        let (send_channel, receive_channel) = mpsc::channel();
-        let is_injecting = Arc::new(std::sync::atomic::AtomicBool::new(false));
-
+    pub fn new(send_channel: Sender<Event>,
+                is_injecting: Arc<AtomicBool>) -> Box<TypingContext> {
         unsafe {
             let has_accessibility = check_accessibility();
             println!("has_accessibility: {}", has_accessibility == 0);
@@ -48,12 +47,13 @@ impl TypingContext {
         }
 
         let context = Box::new(TypingContext {
-            is_injecting: is_injecting.clone(),
-            send_channel: send_channel.clone(),
+            is_injecting,
+            send_channel,
         });
 
         unsafe {
             let context_ptr = &*context as *const TypingContext as *const c_void;
+
             register_keypress_callback(keypress_callback);
 
             initialize(context_ptr);
@@ -72,7 +72,6 @@ impl TypingContext {
 
     fn eventloop(&self) {
         self.start_secure_input_watcher();
-
         unsafe {
             eventloop();
         }
@@ -143,7 +142,10 @@ fn main() {
     }
 
     unsafe {
-        let typing = TypingContext::new();
+        let (send_channel, receive_channel) = mpsc::channel();
+        let is_injecting = Arc::new(std::sync::atomic::AtomicBool::new(false));
+
+        let typing = TypingContext::new(send_channel, is_injecting);
         typing.eventloop();
     }
 }
