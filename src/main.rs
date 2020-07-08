@@ -84,7 +84,6 @@ const MAC_PLIST_FILENAME: &str = "com.phodal.typing.plist";
 
 fn register() {
     use std::fs::create_dir_all;
-    use std::process::Command;
 
     let home_dir = dirs::home_dir().expect("Could not get user home directory");
     let library_dir = home_dir.join("Library");
@@ -138,21 +137,19 @@ fn main() {
         eprintln!("Error starting launchd daemon: {}", res.unwrap_err());
     }
 
-    unsafe {
-        let (send_channel, receive_channel) = mpsc::channel();
-        let is_injecting = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let (send_channel, receive_channel) = mpsc::channel();
+    let is_injecting = Arc::new(std::sync::atomic::AtomicBool::new(false));
 
-        let clone_injecting = is_injecting.clone();
-        thread::Builder::new()
-            .name("daemon_background".to_string())
-            .spawn(move || {
-                worker_background(receive_channel, clone_injecting);
-            })
-            .expect("Unable to spawn daemon background thread");
+    let clone_injecting = is_injecting.clone();
+    thread::Builder::new()
+        .name("daemon_background".to_string())
+        .spawn(move || {
+            worker_background(receive_channel, clone_injecting);
+        })
+        .expect("Unable to spawn daemon background thread");
 
-        let typing = TypingContext::new(send_channel, is_injecting);
-        typing.eventloop();
-    }
+    let typing = TypingContext::new(send_channel, is_injecting);
+    typing.eventloop();
 }
 
 fn worker_background(receive_channel: Receiver<Event>, is_injecting: Arc<AtomicBool>) {
@@ -178,7 +175,7 @@ extern "C" fn keypress_callback(
         }
 
         if event_type == 0 {
-            let c_str = CStr::from_ptr(raw_buffer as (*const c_char));
+            let c_str = CStr::from_ptr(raw_buffer as *const c_char);
             let char_str = c_str.to_str();
 
             match char_str {

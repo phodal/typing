@@ -22,7 +22,6 @@ use crate::ime::event::{KeyEvent, KeyEventReceiver, KeyModifier};
 use regex::Regex;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_yaml::Mapping;
-use std::fs;
 use std::path::PathBuf;
 
 #[derive(Debug, Serialize, Clone)]

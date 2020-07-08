@@ -17,9 +17,7 @@
  * along with espanso.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::ime::event::{
-    ActionEventReceiver, Event, KeyEvent, KeyEventReceiver, SystemEventReceiver,
-};
+use crate::ime::event::{Event, KeyEvent};
 use std::sync::mpsc::Receiver;
 
 pub trait EventManager {
