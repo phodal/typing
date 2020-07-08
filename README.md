@@ -1,3 +1,6 @@
+# Typing
+
+> Typing is a input tool for catch input, and convert to words, log something. 
 
 ## Tech Stack
 
