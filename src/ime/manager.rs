@@ -17,7 +17,9 @@
  * along with espanso.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::ime::event::{ActionEventReceiver, Event, KeyEventReceiver, SystemEventReceiver, KeyEvent};
+use crate::ime::event::{
+    ActionEventReceiver, Event, KeyEvent, KeyEventReceiver, SystemEventReceiver,
+};
 use std::sync::mpsc::Receiver;
 
 pub trait EventManager {
@@ -29,12 +31,8 @@ pub struct DefaultEventManager {
 }
 
 impl DefaultEventManager {
-    pub fn new(
-        receive_channel: Receiver<Event>,
-    ) -> DefaultEventManager {
-        DefaultEventManager {
-            receive_channel,
-        }
+    pub fn new(receive_channel: Receiver<Event>) -> DefaultEventManager {
+        DefaultEventManager { receive_channel }
     }
 }
 

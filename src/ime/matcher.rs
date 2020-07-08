@@ -17,7 +17,7 @@
  * along with espanso.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::ime::event::{KeyEventReceiver, KeyModifier, KeyEvent};
+use crate::ime::event::{KeyEvent, KeyEventReceiver, KeyModifier};
 
 use regex::Regex;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -61,8 +61,8 @@ pub struct ImageContent {
 
 impl<'de> serde::Deserialize<'de> for Match {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
     {
         let auto_match = AutoMatch::deserialize(deserializer)?;
         Ok(Match::from(&auto_match))

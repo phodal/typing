@@ -3,22 +3,21 @@ extern crate lazy_static;
 
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_void};
-use std::process::{Command, exit};
-use std::sync::{Arc, mpsc};
+use std::process::{exit, Command};
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering::Acquire;
-use std::sync::mpsc::{Sender, Receiver};
+use std::sync::mpsc::{Receiver, Sender};
+use std::sync::{mpsc, Arc};
 
-use log::{debug, error, info};
 use crate::ime::event::{Event, KeyEvent, KeyModifier};
-use std::thread;
 use crate::ime::manager::{DefaultEventManager, EventManager};
+use log::{debug, error, info};
+use std::thread;
 
 mod ime;
 
-
 #[link(name = "objbridge", kind = "static")]
-extern {
+extern "C" {
     pub fn initialize(s: *const c_void);
     pub fn eventloop();
     pub fn prompt_accessibility() -> i32;
@@ -35,8 +34,7 @@ pub struct TypingContext {
 }
 
 impl TypingContext {
-    pub fn new(send_channel: Sender<Event>,
-                is_injecting: Arc<AtomicBool>) -> Box<TypingContext> {
+    pub fn new(send_channel: Sender<Event>, is_injecting: Arc<AtomicBool>) -> Box<TypingContext> {
         unsafe {
             let has_accessibility = check_accessibility();
             println!("has_accessibility: {}", has_accessibility == 0);
@@ -63,15 +61,12 @@ impl TypingContext {
             initialize(context_ptr);
         }
 
-
         context
     }
 
     fn start_secure_input_watcher(&self) {
         let mut pid: i64 = -1;
-        unsafe {
-            get_secure_input_process(&mut pid as *mut i64)
-        };
+        unsafe { get_secure_input_process(&mut pid as *mut i64) };
     }
 
     fn eventloop(&self) {
@@ -89,7 +84,7 @@ const MAC_PLIST_FILENAME: &str = "com.phodal.typing.plist";
 
 fn register() {
     use std::fs::create_dir_all;
-    use std::process::{Command};
+    use std::process::Command;
 
     let home_dir = dirs::home_dir().expect("Could not get user home directory");
     let library_dir = home_dir.join("Library");
@@ -102,10 +97,8 @@ fn register() {
     let plist_file = agents_dir.join(MAC_PLIST_FILENAME);
     if !plist_file.exists() {
         let cmd_path = std::env::current_exe().expect("Could not get espanso executable path");
-        let plist_content = String::from(MAC_PLIST_CONTENT).replace(
-            "{{{typing_path}}}",
-            cmd_path.to_str().unwrap_or_default(),
-        );
+        let plist_content = String::from(MAC_PLIST_CONTENT)
+            .replace("{{{typing_path}}}", cmd_path.to_str().unwrap_or_default());
 
         let user_path = std::env::var("PATH").unwrap_or("".to_owned());
         let plist_content = plist_content.replace("{{{PATH}}}", &user_path);
@@ -162,14 +155,8 @@ fn main() {
     }
 }
 
-fn worker_background(
-    receive_channel: Receiver<Event>,
-    is_injecting: Arc<AtomicBool>,
-) {
-
-    let event_manager = DefaultEventManager::new(
-        receive_channel,
-    );
+fn worker_background(receive_channel: Receiver<Event>, is_injecting: Arc<AtomicBool>) {
+    let event_manager = DefaultEventManager::new(receive_channel);
 
     info!("worker is running!");
     event_manager.eventloop();
