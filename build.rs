@@ -6,7 +6,7 @@ use std::path::PathBuf;
 
 #[cfg(target_os = "macos")]
 fn get_config() -> PathBuf {
-    Config::new("native/objbridge").build()
+    Config::new("native/macos").build()
 }
 
 #[cfg(target_os = "macos")]
