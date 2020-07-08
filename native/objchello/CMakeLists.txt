@@ -7,11 +7,12 @@ set(CMAKE_C_FLAGS "-x objective-c")
 
 
 set (SOURCES_FILES
+        main.mm
         AppDelegate.mm
         AppDelegate.h
         )
 
 
-
-add_library(objchello AppDelegate.h AppDelegate.mm)
-#add_executable(objchello MACOSX_BUNDLE ${SOURCES_FILES})
+#add_library(objchello AppDelegate.h AppDelegate.mm)
+add_executable(objchello MACOSX_BUNDLE ${SOURCES_FILES})
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa")
