@@ -17,3 +17,4 @@ Makefile
 # Swift
 build
 *.mm
+_builds

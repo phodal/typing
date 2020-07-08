@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.15.1)
 
-project(AppDelegate LANGUAGES Swift)
+project(swiftapp LANGUAGES Swift)
 
-set (CMAKE_CXX_STANDARD 11)
-set(CMAKE_C_FLAGS "-x objective-c")
+set (SOURCES_FILES
+        AppDelegate.swift
+        )
 
-add_executable(AppDelegate AppDelegate.swift)
+add_executable(swiftapp MACOSX_BUNDLE ${SOURCES_FILES})
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa")
