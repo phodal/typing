@@ -1,14 +1,18 @@
+#[macro_use]
+extern crate lazy_static;
+
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_void};
 use std::process::{Command, exit};
 use std::sync::{Arc, mpsc};
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering::Acquire;
-use std::sync::mpsc::Sender;
+use std::sync::mpsc::{Sender, Receiver};
 
-use log::{debug, error};
-use crate::ime::{Event, KeyEvent, KeyModifier};
+use log::{debug, error, info};
+use crate::ime::event::{Event, KeyEvent, KeyModifier};
 use std::thread;
+use crate::ime::manager::{DefaultEventManager, EventManager};
 
 mod ime;
 
@@ -145,9 +149,30 @@ fn main() {
         let (send_channel, receive_channel) = mpsc::channel();
         let is_injecting = Arc::new(std::sync::atomic::AtomicBool::new(false));
 
+        let clone_injecting = is_injecting.clone();
+        thread::Builder::new()
+            .name("daemon_background".to_string())
+            .spawn(move || {
+                worker_background(receive_channel, clone_injecting);
+            })
+            .expect("Unable to spawn daemon background thread");
+
         let typing = TypingContext::new(send_channel, is_injecting);
         typing.eventloop();
     }
+}
+
+fn worker_background(
+    receive_channel: Receiver<Event>,
+    is_injecting: Arc<AtomicBool>,
+) {
+
+    let event_manager = DefaultEventManager::new(
+        receive_channel,
+    );
+
+    info!("worker is running!");
+    event_manager.eventloop();
 }
 
 extern "C" fn keypress_callback(
